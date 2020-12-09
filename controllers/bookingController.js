@@ -52,7 +52,7 @@ exports.createBookingCheckout = catchAsync(async (req, res, next) => {
 
   //now want to remove query string from url as it has sensitive info in it
   //req.origibalUrl is the current url, ie where the original request came from
-  res.redirect(req.originalUrl.split('?')[0]);
+  // res.redirect(req.originalUrl.split('?')[0]);
   // now after split 1st half is just ${req.protocol}://${req.get('host')}/
   //so now goes back to '/' route which will go thru the middleware, no query string, move to next middleware which is just getOverview which renders the page
 });
