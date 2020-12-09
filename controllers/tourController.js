@@ -301,80 +301,80 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
   console.log(tours);
 });
 
-eexports.getDistances = catchAsync(async (req, res, next) => {
-  const { latlng, unit } = req.params;
-  const [lat, lng] = latlng.split(',');
+// exports.getDistances = catchAsync(async (req, res, next) => {
+//   const { latlng, unit } = req.params;
+//   const [lat, lng] = latlng.split(',');
 
-  const multiplier = unit === 'mi' ? 0.000621371 : 0.001;
+//   const multiplier = unit === 'mi' ? 0.000621371 : 0.001;
 
-  if (!lat || !lng) {
-    next(
-      new AppError(
-        'Please provide latitutr and longitude in the format lat,lng.',
-        400
-      )
-    );
-  }
-
-  const distances = await Tour.aggregate([
-    {
-      $geoNear: {
-        near: {
-          type: 'Point',
-          coordinates: [lng * 1, lat * 1],
-        },
-        distanceField: 'distance',
-        distanceMultiplier: multiplier,
-      },
-    },
-    {
-      $project: {
-        distance: 1,
-        name: 1,
-      },
-    },
-  ]);
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      data: distances,
-    },
-  });
-});
-
-// exports.getTour = catchAsync(async (req, res, next) => {
-//   const tour = await Tour.findById(req.params.id).populate('reviews');
-//   // const tour = await Tour.findById(req.params.id).populate('guides');
-//   //this populate thing is for refrencing lecture 153, gets the guides with the correspoding user ids
-//   //same as above but turns it into an object
-
-//   //THIS BELOW WORKS, to make better, created a query middleware in the tourModel.js
-//   // const tour = await Tour.findById(req.params.id).populate({
-//   //   path: 'guides',
-//   //   select: '-__v -passwordChangedAt', //this wont show with the user info
-//   // });
-//   // const tour = await Tour.findById(req.params.id, (err) => {
-//   //Tour.findOne({_id: req.params.id}) is the same
-//   if (!tour) {
-//     return next(new AppError('No tour found with that ID', 404));
+//   if (!lat || !lng) {
+//     next(
+//       new AppError(
+//         'Please provide latitutr and longitude in the format lat,lng.',
+//         400
+//       )
+//     );
 //   }
+
+//   const distances = await Tour.aggregate([
+//     {
+//       $geoNear: {
+//         near: {
+//           type: 'Point',
+//           coordinates: [lng * 1, lat * 1],
+//         },
+//         distanceField: 'distance',
+//         distanceMultiplier: multiplier,
+//       },
+//     },
+//     {
+//       $project: {
+//         distance: 1,
+//         name: 1,
+//       },
+//     },
+//   ]);
+
 //   res.status(200).json({
 //     status: 'success',
-//     data: { tour },
-//   });
-// });
-
-// exports.createTour = catchAsync(async (req, res, next) => {
-//   //awaits catchAsysc to see if there are any errors
-//   const newTour = await Tour.create(req.body);
-//   res.status(201).json({
-//     status: 'success',
 //     data: {
-//       tour: newTour,
+//       data: distances,
 //     },
 //   });
 // });
+
+// // exports.getTour = catchAsync(async (req, res, next) => {
+// //   const tour = await Tour.findById(req.params.id).populate('reviews');
+// //   // const tour = await Tour.findById(req.params.id).populate('guides');
+// //   //this populate thing is for refrencing lecture 153, gets the guides with the correspoding user ids
+// //   //same as above but turns it into an object
+
+// //   //THIS BELOW WORKS, to make better, created a query middleware in the tourModel.js
+// //   // const tour = await Tour.findById(req.params.id).populate({
+// //   //   path: 'guides',
+// //   //   select: '-__v -passwordChangedAt', //this wont show with the user info
+// //   // });
+// //   // const tour = await Tour.findById(req.params.id, (err) => {
+// //   //Tour.findOne({_id: req.params.id}) is the same
+// //   if (!tour) {
+// //     return next(new AppError('No tour found with that ID', 404));
+// //   }
+// //   res.status(200).json({
+// //     status: 'success',
+// //     data: { tour },
+// //   });
+// // });
+
+// // exports.createTour = catchAsync(async (req, res, next) => {
+// //   //awaits catchAsysc to see if there are any errors
+// //   const newTour = await Tour.create(req.body);
+// //   res.status(201).json({
+// //     status: 'success',
+// //     data: {
+// //       tour: newTour,
+// //     },
+// //   });
+// // });
 exports.getAllTours = factory.getAll(Tour);
 exports.createTour = factory.createOne(Tour);
 exports.updateTour = factory.updateOne(Tour);
