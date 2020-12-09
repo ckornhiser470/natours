@@ -267,39 +267,39 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
 });
 
 // '/tours-within/:distance/center/:latlng/unit/:unit'
-// /tours-within/233/center/-40,45/unit/mi
-exports.getToursWithin = catchAsync(async (req, res, next) => {
-  const { distance, latlng, unit } = req.params;
-  //remember the above is eslint shorthand, will extract these values from the url
+// // /tours-within/233/center/-40,45/unit/mi
+// exports.getToursWithin = catchAsync(async (req, res, next) => {
+//   const { distance, latlng, unit } = req.params;
+//   //remember the above is eslint shorthand, will extract these values from the url
 
-  const [lat, lng] = latlng.split(','); // because it is a string, will split at the comma
+//   const [lat, lng] = latlng.split(','); // because it is a string, will split at the comma
 
-  //we need to define the radius for the below center sphere, we do this by dividing our distance by the radius of the earth
-  const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1; //on the left is miles, the : says else it's km so thats the earth's radius in km
-  //radius is in radians and this is show we have to calculate it
-  //this is short hand for if the unit is in miles
-  if (!lat || !lng) {
-    next(
-      new AppError(
-        'Please provide latitude and longitude in the format lat,lng',
-        400
-      )
-    );
-  }
+// //we need to define the radius for the below center sphere, we do this by dividing our distance by the radius of the earth
+// const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1; //on the left is miles, the : says else it's km so thats the earth's radius in km
+// //radius is in radians and this is show we have to calculate it
+// //this is short hand for if the unit is in miles
+// if (!lat || !lng) {
+//   next(
+//     new AppError(
+//       'Please provide latitude and longitude in the format lat,lng',
+//       400
+//     )
+//   );
+// }
 
-  //geospacial operations, operator $geoWithin finds documents that are within a certain distance
-  //creates a sphere that starts at lat and has a radius of the distance defined
-  const tours = await Tour.find({
-    startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
-  });
-  //also weird, but the needs to be defined by [lng, lat] not the traditional way lat, lng
-  res.status(200).json({
-    status: 'success',
-    results: tours.length,
-    data: { data: tours },
-  });
-  console.log(tours);
-});
+//geospacial operations, operator $geoWithin finds documents that are within a certain distance
+//creates a sphere that starts at lat and has a radius of the distance defined
+//   const tours = await Tour.find({
+//     startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+//   });
+//   //also weird, but the needs to be defined by [lng, lat] not the traditional way lat, lng
+//   res.status(200).json({
+//     status: 'success',
+//     results: tours.length,
+//     data: { data: tours },
+//   });
+//   console.log(tours);
+// });
 
 // exports.getDistances = catchAsync(async (req, res, next) => {
 //   const { latlng, unit } = req.params;
