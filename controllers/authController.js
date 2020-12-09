@@ -107,14 +107,14 @@ exports.logout = (req, res) => {
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) Getting the token and check if it is there
   let token;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
-    token = req.headers.authorization.split(' ')[1]; //bearer <token> in header so splits at space and wants second element
-  } else if (req.cookies.jwt) {
-    token = req.cookies.jwt;
-  }
+  // if (
+  //   req.headers.authorization &&
+  //   req.headers.authorization.startsWith('Bearer')
+  // ) {
+  //   token = req.headers.authorization.split(' ')[1]; //bearer <token> in header so splits at space and wants second element
+  // } else i
+  if (req.cookies.jwt) token = req.cookies.jwt;
+
   if (!token) {
     // console.log(token);
     return next(
