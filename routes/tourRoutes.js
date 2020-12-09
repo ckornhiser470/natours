@@ -46,9 +46,9 @@ router
   );
 //new way to specify url that takes a lot of option
 //center is the point where you live
-router
-  .route('/tours-within/:distance/center/:latlng/unit/:unit')
-  .get(tourController.getToursWithin);
+// router
+//   .route('/tours-within/:distance/center/:latlng/unit/:unit')
+//   .get(tourController.getToursWithin);
 //other way : '/tours-within?distance=2336&center=-40,456&unit=mi'
 // /tours-within/233/center/-40,45/unit/mi
 
