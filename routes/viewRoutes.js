@@ -11,12 +11,8 @@ const bookingController = require('../controllers/bookingController');
 //   }); //normally use json, but now use render in order to render the template as a response
 // });
 
-router.get(
-  '/',
-  bookingController.createBookingCheckout,
-  authController.isLoggedIn,
-  viewsController.getOverview
-);
+router.get('/', authController.isLoggedIn, viewsController.getOverview);
+
 router.get('/tour/:slug', authController.isLoggedIn, viewsController.getTour);
 router.get('/login', viewsController.getLogin);
 router.get('/me', authController.protect, viewsController.getAccount);

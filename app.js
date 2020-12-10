@@ -16,6 +16,7 @@ const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const viewsRouter = require('./routes/viewRoutes');
 const bookingRouter = require('./routes/bookingRoutes');
+const bookingController = require('./controllers/bookingController');
 const AppError = require('./routes/utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 
@@ -36,6 +37,9 @@ app.use(cors()); //if you just wanted it on Tours, add to the roughte like a nor
 //     origin: 'https://www.natours.com',
 //   }));
 
+//to test cors, go to empy page, inspect, console,
+//const x = await fetch('https://natours-by-cass.herokuapp.com/api/v1/tours')
+//and see the response, fetch is plain JS so can be directly written into browser
 //options is just like app.get, app.delete, etc
 //http request to respond to
 app.options('*', cors());
@@ -114,6 +118,12 @@ const limiter = rateLimit({
 });
 
 app.use('/api', limiter); //this middleware will only be applied to the api route
+
+app.post(
+  '/webhook-checkout',
+  express.raw({ type: 'application/json' }),
+  bookingController.webhookCheckout
+);
 
 //Body parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' })); //middleware allows you to get incoming data
