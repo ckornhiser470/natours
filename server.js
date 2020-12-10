@@ -37,9 +37,12 @@ process.on('unhandledRejection', (err) => {
 });
 
 //added for Heroku, which resets every 24hrs, so this will prevent any abrupt shutdown without finishing promises
+//Polite way to ask app to shut down
 process.on('SIGTERM', () => {
   console.log('👋 SIGTERM RECEIVED. Shutting down gracefully');
   server.close(() => {
     console.log('💥 Process terminated!');
   });
 });
+
+//heroku ps:restart

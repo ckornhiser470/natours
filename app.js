@@ -3,7 +3,8 @@ const path = require('path'); //module to help with paths
 const morgan = require('morgan');
 const csp = require('express-csp');
 const compression = require('compression'); //npm i compression
-
+const cors = require('cors'); //npm i cors
+//cors is for cross origin
 const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
@@ -26,6 +27,21 @@ app.enable('trust proxy'); //allows the createSendToken to work properly with He
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views')); //helps find the path to the views folder, helps to eliminate double slashes etc
 //(1) GLOBAL MIDDLEWARES
+// Implement CORS, has to do with headers, documentation is on GitHub
+app.use(cors()); //if you just wanted it on Tours, add to the roughte like a normal midleleware
+// Access-Control-Allow-Origin *
+//api.natours.com, front-end natours.com
+// app.use(
+//   cors({
+//     origin: 'https://www.natours.com',
+//   }));
+
+//options is just like app.get, app.delete, etc
+//http request to respond to
+app.options('*', cors());
+//this is saying all routes, with cors as the handler
+//could do it on a specific route i.e. app.options('/api', cors())
+
 // Serving static files
 // app.use(express.static(`${__dirname}/public`)); uses the path module below as same thing
 app.use(express.static(path.join(__dirname, 'public')));
@@ -174,6 +190,8 @@ app.all('*', (req, res, next) => {
 });
 //GLOBAL ERROR HANDELING MIDDLEWARE
 app.use(globalErrorHandler);
+
+//on package.json ^10 means you can't install greated thna this version
 
 module.exports = app;
 // (4) START SERVER
