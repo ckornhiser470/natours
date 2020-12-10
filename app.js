@@ -4,7 +4,6 @@ const morgan = require('morgan');
 const csp = require('express-csp');
 const compression = require('compression'); //npm i compression
 
-const app = express();
 const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
@@ -17,8 +16,11 @@ const reviewRouter = require('./routes/reviewRoutes');
 const viewsRouter = require('./routes/viewRoutes');
 const bookingRouter = require('./routes/bookingRoutes');
 const AppError = require('./routes/utils/appError');
-
 const globalErrorHandler = require('./controllers/errorController');
+
+const app = express();
+
+app.enable('trust proxy'); //allows the createSendToken to work properly with Heroku
 //npm install pug
 //Template Engine, don't need to require pug, happens behind the scense
 app.set('view engine', 'pug');

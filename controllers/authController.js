@@ -14,20 +14,22 @@ const signToken = (id) => {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
+
 // eslint-disable-next-line no-multi-assign
-const createSendToken = (user, statusCode, res) => {
+const createSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id);
-  const cookieOptions = {
+
+  res.cookies('jwt', token, {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
       //converts to milleseconds
     ),
     // secure: true, //can only be sent thru https and only in production
     httpOnly: true,
+    secure: req.secure || req.headers('x-forwarded-proto') === 'https',
     //cannot maniuplate in the browser so for log out we are going to create new token sthat overrides the login one
-  };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
-  res.cookie('jwt', token, cookieOptions);
+  });
+  // if (process.env.NODE_ENV === 'production') cookieOptions.secure = true; //means only on https
 
   //removes the password from being visable in the output
   user.password = undefined;
@@ -55,7 +57,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   await new Email(newUser, url).sendWelcome();
 
   //logs in new user using the JWT, don't need to check password or email since user was just created
-  createSendToken(newUser, 201, res);
+  createSendToken(newUser, 201, req, res);
 });
 //refactors the commented out code below
 //https://jwt.io/ go to here to debug the token and see what's being passed through
@@ -92,7 +94,7 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError('Incorrect email or password', 401));
   }
   // 3) If everything okay, send token to client
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, req, res);
 });
 
 exports.logout = (req, res) => {
@@ -107,13 +109,12 @@ exports.logout = (req, res) => {
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) Getting the token and check if it is there
   let token;
-  // if (
-  //   req.headers.authorization &&
-  //   req.headers.authorization.startsWith('Bearer')
-  // ) {
-  //   token = req.headers.authorization.split(' ')[1]; //bearer <token> in header so splits at space and wants second element
-  // } else i
-  if (req.cookies.jwt) token = req.cookies.jwt;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1]; //bearer <token> in header so splits at space and wants second element
+  } else if (req.cookies.jwt) token = req.cookies.jwt;
 
   if (!token) {
     // console.log(token);
@@ -263,7 +264,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   await user.save(); //need to put pm.environment.set("jwt", pm.response.json().token); in Tests section of Reset Password
   // 3) Update changedPasswordAt property for the user
   // 4) Log the user in, send JWT
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
 exports.updatePassword = catchAsync(async (req, res, next) => {
   // 1) Get user from the collection
@@ -279,5 +280,5 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   user.passwordConfirm = req.body.passwordConfirm; //will use already built vailadator to make sure they match
   await user.save();
   // 4) Log user in, send JWT
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
