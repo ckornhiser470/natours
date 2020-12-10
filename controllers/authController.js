@@ -26,7 +26,7 @@ const createSendToken = (user, statusCode, req, res) => {
     ),
     // secure: true, //can only be sent thru https and only in production
     httpOnly: true,
-    secure: req.secure || req.headers('x-forwarded-proto') === 'https',
+    secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
     //cannot maniuplate in the browser so for log out we are going to create new token sthat overrides the login one
   });
   // if (process.env.NODE_ENV === 'production') cookieOptions.secure = true; //means only on https
