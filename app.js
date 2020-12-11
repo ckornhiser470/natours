@@ -52,10 +52,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 //this connects template to routes, so really is get requests, requests style.css for template, this directs to where the sheet is held and returns it
 
 //Set security HTTP headers
-app.use(helmet());
+app.use(helmet({ contentSecurityPolicy: false }));
 
 csp.extend(app, {
-  //this is to fix the content security violations
   policy: {
     directives: {
       'default-src': ['self'],
@@ -67,39 +66,55 @@ csp.extend(app, {
         'data',
         'blob',
         'https://js.stripe.com',
-        'https://api.mapbox.com',
+        'https://*.mapbox.com',
+        'https://*.cloudflare.com/',
+        'https://bundle.js:8828',
+        'ws://localhost:56558/',
       ],
       'worker-src': [
         'self',
         'unsafe-inline',
         'data:',
         'blob:',
-        'https://js.stripe.com',
-        'https://api.mapbox.com',
+        'https://*.stripe.com',
+        'https://*.mapbox.com',
+        'https://*.cloudflare.com/',
+        'https://bundle.js:*',
+        'ws://localhost:*/',
       ],
       'frame-src': [
         'self',
         'unsafe-inline',
         'data:',
         'blob:',
-        'https://js.stripe.com',
-        'https://api.mapbox.com',
+        'https://*.stripe.com',
+        'https://*.mapbox.com',
+        'https://*.cloudflare.com/',
+        'https://bundle.js:*',
+        'ws://localhost:*/',
       ],
       'img-src': [
         'self',
         'unsafe-inline',
         'data:',
         'blob:',
-        'https://js.stripe.com',
-        'https://api.mapbox.com',
+        'https://*.stripe.com',
+        'https://*.mapbox.com',
+        'https://*.cloudflare.com/',
+        'https://bundle.js:*',
+        'ws://localhost:*/',
       ],
       'connect-src': [
         'self',
         'unsafe-inline',
         'data:',
         'blob:',
-        'https://api.mapbox.com',
-        'https://events.mapbox.com',
+        'wss://<HEROKU-SUBDOMAIN>.herokuapp.com:<PORT>/',
+        'https://*.stripe.com',
+        'https://*.mapbox.com',
+        'https://*.cloudflare.com/',
+        'https://bundle.js:*',
+        'ws://localhost:*/',
       ],
     },
   },
