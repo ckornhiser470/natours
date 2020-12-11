@@ -55,8 +55,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 //this connects template to routes, so really is get requests, requests style.css for template, this directs to where the sheet is held and returns it
 
 //Set security HTTP headers
-app.use(helmet({ contentSecurityPolicy: false }));
-
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'", 'https:', 'http:', 'data:', 'ws:'],
+      baseUri: ["'self'"],
+      fontSrc: ["'self'", 'https:', 'http:', 'data:'],
+      scriptSrc: ["'self'", 'https:', 'http:', 'blob:'],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https:', 'http:'],
+    },
+  })
+);
 csp.extend(app, {
   //this is to fix the content security violations
   policy: {
