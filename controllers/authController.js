@@ -16,7 +16,7 @@ const signToken = (id) => {
 };
 
 // eslint-disable-next-line no-multi-assign
-const createSendToken = (user, statusCode, res) => {
+const createSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id);
   const cookieOptions = {
     expires: new Date(
@@ -25,9 +25,12 @@ const createSendToken = (user, statusCode, res) => {
     ),
     // secure: true, //can only be sent thru https and only in production
     httpOnly: true,
+    secure: req.secure || req.headers('x-forwarded-proto') === 'https',
     //cannot maniuplate in the browser so for log out we are going to create new token sthat overrides the login one
   };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+  //this change is very heroku specific
+  // if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+
   res.cookie('jwt', token, cookieOptions);
 
   //removes the password from being visable in the output
@@ -113,7 +116,9 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1]; //bearer <token> in header so splits at space and wants second element
-  } else if (req.cookies.jwt) token = req.cookies.jwt;
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
+  }
 
   if (!token) {
     // console.log(token);
@@ -121,6 +126,7 @@ exports.protect = catchAsync(async (req, res, next) => {
       new AppError('You are not logged in! Please log in to get access.', 401)
     );
   }
+
   // 2) Validate and verify the token, checks if token is expired or data was manipulated
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
   //It just takes a function that normally takes a callback and turns it into a Promise instead.
@@ -154,7 +160,10 @@ exports.isLoggedIn = async (req, res, next) => {
     //checks if cookie is in proper format, if not moves on to next middleware
     try {
       // 1) Verifies the token
-      const decoded = await jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
+      const decoded = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET
+      );
       // 2) Check if user still exists
       const currentUser = await User.findById(decoded.id);
       if (!currentUser) {
@@ -172,7 +181,8 @@ exports.isLoggedIn = async (req, res, next) => {
       }
 
       // THERE IS A LOGGED IN USER
-      res.locals.user = currentUser; //makes the data of this user acessible when using the templates, varibale user
+      res.locals.user = currentUser;
+      //makes the data of this user acessible when using the templates, varibale user
       // passes data into template like with render function
       return next();
     } catch (err) {
