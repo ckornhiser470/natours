@@ -62,7 +62,7 @@ const sendErrorProd = (err, req, res) => {
       //Programming or other unknown error so we don't want to share what it is with client
     }
     // 1) Log Error
-    console.error('ERROR 🤯', err);
+    console.error('ERROR 🤯', err, err.stack);
     //2) Send generic message
     return res.status(500).json({
       status: 'error',
