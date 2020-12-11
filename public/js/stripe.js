@@ -1,11 +1,12 @@
 /* eslint-disable */
 import axios from 'axios';
 import { showAlert } from './alerts';
-const stripe = Stripe(
-  'pk_test_51HvVJZH4OqSHUwdZF7FNqpWVSuG9zjBMssuRV6w4bY5elIsn1bvqMXVswWScZlJPeobfvI4Gl0T8dHgR1nIXV7MM00Urwq1wx2'
-); //this object is gloabaly available from tour.pug script tag
+//this object is gloabaly available from tour.pug script tag
 
 export const bookTour = async (tourId) => {
+  const stripe = Stripe(
+    'pk_test_51HvVJZH4OqSHUwdZF7FNqpWVSuG9zjBMssuRV6w4bY5elIsn1bvqMXVswWScZlJPeobfvI4Gl0T8dHgR1nIXV7MM00Urwq1wx2'
+  );
   try {
     // 1) Get checkout session from API
     const session = await axios(
