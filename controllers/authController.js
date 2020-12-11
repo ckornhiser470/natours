@@ -16,20 +16,19 @@ const signToken = (id) => {
 };
 
 // eslint-disable-next-line no-multi-assign
-const createSendToken = (user, statusCode, req, res) => {
+const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
-
-  res.cookie('jwt', token, {
+  const cookieOptions = {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
       //converts to milleseconds
     ),
     // secure: true, //can only be sent thru https and only in production
     httpOnly: true,
-    secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
     //cannot maniuplate in the browser so for log out we are going to create new token sthat overrides the login one
-  });
-  // if (process.env.NODE_ENV === 'production') cookieOptions.secure = true; //means only on https
+  };
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+  res.cookie('jwt', token, cookieOptions);
 
   //removes the password from being visable in the output
   user.password = undefined;
