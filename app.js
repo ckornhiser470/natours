@@ -54,6 +54,8 @@ app.options('*', cors());
 app.use(express.static(path.join(__dirname, 'public')));
 //this connects template to routes, so really is get requests, requests style.css for template, this directs to where the sheet is held and returns it
 
+const port = process.env.PORT || 3000;
+
 //Set security HTTP headers
 app.use(helmet());
 app.use(
@@ -122,7 +124,7 @@ csp.extend(app, {
         'unsafe-inline',
         'data:',
         'blob:',
-        'wss://natours-by-cass.herokuapp.com:<PORT>/',
+        `wss://natours-by-cass.herokuapp.com:${port}/`,
         'https://*.stripe.com',
         'https://*.mapbox.com',
         'https://*.cloudflare.com/',
