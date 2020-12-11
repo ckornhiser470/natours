@@ -1,10 +1,13 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const bookingController = require('./controllers/bookingController');
+const stripe = require('./public/js/stripe');
+
 process.on('uncaughtException', (err) => {
   console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');
   console.log(err.name, err.message, err.stack);
-  console.log(bookingController.getCheckoutSession);
+  console.log(stripe);
+  console.log(stripe.bookTour.session);
   console.log(bookingController.getCheckoutSession.session);
   process.exit(1);
 });
