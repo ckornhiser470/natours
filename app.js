@@ -157,6 +157,7 @@ app.use(compression());
 //using next shows we are defining a middleware function
 app.use((req, res, next) => {
   console.log('Hello from the middleware 😆');
+  console.log(process.env.STRIPE_WEBHOOK_SECRET);
   //have to call next since it is middleware
   next();
 });
