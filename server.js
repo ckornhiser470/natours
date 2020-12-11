@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 process.on('uncaughtException', (err) => {
   console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');
   console.log(err.name, err.message, err.stack);
+  console.log(process.env.STRIPE_WEBHOOK_SECRET);
   process.exit(1);
 });
 

@@ -42,7 +42,7 @@ const createSendToken = (user, statusCode, req, res) => {
     },
   });
 };
-
+// heroku run node --trace-warnings ...
 exports.signup = catchAsync(async (req, res, next) => {
   // const newUser = await User.create(req.body);
   const newUser = await User.create({
