@@ -14,28 +14,27 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   // const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
-    // success_url: `${req.protocol}://${req.get('host')}/`, //home url
-    //want a booking to be stored in model after this url
-    // success_url: `${req.protocol}://${req.get('host')}/?tour=${
-    //   req.params.tourId
-    // }&user=${req.user.id}&price=${tour.price}`,
-    //this abpve extension to the url follows the syntax of what the booking model requires
-
     success_url: `${req.protocol}://${req.get('host')}/my-tours`,
-    cancel_url: `${req.protocol}://${req.get('host')}/tour/${tour.slug}`, //the tour page they were previously on
-    customer_email: req.user.email, //becuase protected route, user is accessible thru req.user
+    cancel_url: `${req.protocol}://${req.get('host')}/tour/${tour.slug}`,
+    customer_email: req.user.email,
     client_reference_id: req.params.tourId,
+    mode: 'payment',
     line_items: [
-      //infor about product user is purchasing
       {
-        name: `${tour.name} Tour`,
-        description: tour.summary,
-        images: [
-          `${req.protocol}://${req.get('host')}/img/tours/${tour.imageCover}`,
-        ],
-        amount: tour.price * 100, //convert to cents
-        currency: 'usd',
-        quantity: 1, //one tour
+        quantity: 1,
+        price_data: {
+          currency: 'usd',
+          unit_amount: tour.price * 100,
+          product_data: {
+            name: `${tour.name} Tour`,
+            description: tour.summary,
+            images: [
+              `${req.protocol}://${req.get('host')}/img/tours/${
+                tour.imageCover
+              }`,
+            ],
+          },
+        },
       },
     ],
   });
@@ -65,11 +64,10 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
 // });
 
 //this is all from Stripe doc umentation
-
 const createBookingCheckout = async (session) => {
   const tour = session.client_reference_id;
   const user = (await User.findOne({ email: session.customer_email })).id;
-  const price = session.display_items[0].amount / 100;
+  const price = session.amount_total / 100;
   await Booking.create({ tour, user, price });
 };
 
