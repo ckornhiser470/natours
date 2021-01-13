@@ -28,6 +28,7 @@ app.enable('trust proxy');
 
 //npm install pug
 //Template Engine, don't need to require pug, happens behind the scense
+
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views')); //helps find the path to the views folder, helps to eliminate double slashes etc
 //(1) GLOBAL MIDDLEWARES
